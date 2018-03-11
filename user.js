@@ -6,7 +6,7 @@
  */
 function user() {
     let userName;
-    let name;
+    let userId; // PK: user actual name
     let location;
     let favoriteCount = 0;
     let retweetCount = 0;

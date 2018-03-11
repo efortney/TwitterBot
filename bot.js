@@ -1,11 +1,17 @@
 //========== Twitter Bot ==========//
+// Elliot Fortney 
+
+
 'use strict'
+
+
 const twit          = require('twit');
 const location      = require('./location.js');
 const action        = require('./action.js');
 const user          = require('./user.js');
 const userList      = require('./action.js').userList;
 const config        = require('./config.js');
+const queries       = require('./queries.js');
 
 // Be sure to go to twitter and get your own API key. 
 var bot = new twit(config)

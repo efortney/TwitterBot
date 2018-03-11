@@ -3,11 +3,10 @@
  * Tracks overall popularity of a tweet, allows for statistical analysis of tweet.
  */
  function tweet() {
+     let tweetID;
      let text;
      let date;
-     let charCount;
-     let hasEmojii;
-     let hasReply;
-     let hasFavorite;
-     let hasRetweet;
+     let userID; //PK FK1 
  }
+
+ module.exports = tweet;
