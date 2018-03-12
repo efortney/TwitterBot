@@ -1,3 +1,5 @@
+
+'use strict'
 //===== ACTION PAGE =====//
 
 //===== imports =====//
@@ -24,7 +26,7 @@ module.exports = {
     { locations: param.id })
     stream.on('tweet', function (tweet) {
       var db = connect()
-      let location = queries.createLocationTable(param.name) // create the location as a table
+      var location = queries.createLocationTable(param.name) // create the location as a table
       insertData(location,db) // insert the table into db
       collectData(tweet,db) // grab data and store it 
       closeCon(db)

@@ -1,5 +1,5 @@
 //=====LOCATION OBJECT=====//
-
+'use strict'
  /**
   * Constructor. All values must be converted to string in order to create requests.
   * Params:

@@ -1,5 +1,5 @@
 //===== USER OBJECT =====//
-
+'use strict'
 /**
  * User constructor
  * Tracks data about user specific to their tweeting habits.
