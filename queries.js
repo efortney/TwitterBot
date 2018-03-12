@@ -1,5 +1,6 @@
 //=====STATEMENTS=====//
 //Statements are created as functions in order to be used in the exports module. 
+'use strict'
 
 module.exports = {
 
