@@ -1,7 +1,6 @@
 //=====STATEMENTS=====//
 //Statements are created as functions in order to be used in the exports module. 
 'use strict'
-
 module.exports = {
 
     /**
@@ -9,7 +8,7 @@ module.exports = {
      * @param{Object} a tweet object.
      */
     insertTweet : function(tweet) {
-        sql = 'INSERT INTO tweets (tweetText, date, userName) VALUES ('
+        let sql = 'INSERT INTO tweets (tweetText, date, userName) VALUES ('
         + '"' + tweet.text  + '", "' +  tweet.date +  '", "' + tweet.userName + '" )';
         return sql; 
     },
@@ -19,7 +18,7 @@ module.exports = {
      * @param{Object} a user object 
      */
     insertUser : function(user) { 
-        sql = 'INSERT or replace INTO users (userID, userName, location, userID) VALUES ('
+        let sql = 'INSERT or replace INTO users (userID, userName, location, userID) VALUES ('
         +'"'+ user.name + '", "' + user.userName + '", "' + user.location + '", "' + user.userID +  '" )';
         return sql;
     },

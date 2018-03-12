@@ -4,7 +4,6 @@
 
 'use strict'
 
-
 const twit          = require('twit');
 const location      = require('./location.js');
 const action        = require('./action.js');
@@ -17,15 +16,14 @@ const queries       = require('./queries.js');
 var bot = new twit(config)
 
 // locations for bot testing 
-var mowo = new location('-92.77994', '38.76098', '-93.77894', '39.76198')
-var sanFrancisco = [ '-122.75', '36.8', '-121.75', '37.8' ]
+var mowo = new location('-92.77994', '38.76098', '-94.77894', '39.76198')
 var sanFran = new location('-122.75','36.8','-121.75','37.8')
 sanFran.setName("San Francisco")
 mowo.setName("St. Joseph")
 
 //========== Run Bot ==========//
 try{
-action.streamSearch(bot,sanFran)
+action.streamSearch(bot,mowo)
 }catch(err){
     console.log(err)
 }
