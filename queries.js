@@ -3,15 +3,23 @@
 
 module.exports = {
 
+    /**
+     * Inserts a tweet into the tweet table. 
+     * @param{Object} a tweet object.
+     */
     insertTweet : function(tweet) {
         sql = 'INSERT INTO tweets (tweetID, tweetText, date) VALUES ('
-        + tweet.userID + ', ' + tweet.text  + ', ' +  tweet.date +  ' )';
+        + '"' + tweet.userID + '", "' + tweet.text  + '", "' +  tweet.date +  '" )';
         return sql; 
     },
 
+    /**
+     * Inserts a user into the user table.
+     * @param{Object} a user object 
+     */
     insertUser : function(user) { 
-        sql = 'INSERT INTO users (userID, userName, location) VALUES ('
-        + user.name + ', ' + user.userName + ', ' + user.location + ')';
+        sql = 'INSERT INTO users (userID, userName, location, userID) VALUES ('
+        +'"'+ user.name + '", "' + user.userName + '", "' + user.location + '", "' + user.userID +  '" )';
         return sql;
     },
 
@@ -20,10 +28,10 @@ module.exports = {
      * @param{String} name: name of the location 
      */
     createLocationTable : function(name) {
-        let sql = 'CREATE TABLE IF NOT EXSITS ' + name + ' (' 
+        let sql = 'CREATE TABLE IF NOT EXISTS "' + name + '" (' 
         + 'name text PRIMARY KEY, ' 
-        + 'user_count INTERGER, '
-        + 'total_tweets INTEGER';
+        + 'user_count INT, '
+        + 'total_tweets INT )';
         return sql;
     },
 
@@ -36,7 +44,7 @@ module.exports = {
         + ' tweetText text,'
         + ' date text,'
         + ' userName text,'
-        + 'FOREIGN KEY (userName) REFERENCES users (userName)';
+        + 'FOREIGN KEY (userName) REFERENCES users (userName) ';
         return sql;
     },
 
@@ -48,9 +56,9 @@ module.exports = {
         + ' userID text PRIMARY KEY,'
         + ' userName text,'
         + ' location text,'
-        + ' favoriteCount int,'
-        + ' retweetCount int,'
-        + ' overallPopularity int'
+        + ' favoriteCount INT,'
+        + ' retweetCount INT,'
+        + ' overallPopularity INT )'
         return sql;
     }
 }

@@ -10,18 +10,23 @@ const sqlite3   = require('sqlite3').verbose(); //set this to verbose so we can 
 
 module.exports = {
   /**
-   * opens a stream and grabs data from a specified location
+   * Opens a stream and grabs data from a specified location
+   * This method requires callbacks nested deep within the module. 
+   * It will first call collect data, which will grab only the data wanted and placing it into an
+   * array. It will then call nested functions which will process the data, create the
+   * corresponding objects, and insert them into a database. 
+   * @param{bot} bot: any twitter bot object
+   * @param{param} object: a city, or set of coordinate pairs.
    */
   streamSearch: function(bot, param) {
     console.log("Watching for tweets from " + param.name)
-    console.log(param.id)
     var stream = bot.stream('statuses/filter',
     { locations: param.id })
     stream.on('tweet', function (tweet) {
       var db = connect()
-      queries.createLocationTable(param.id)
-      collectData(tweet)
-      closeCon(db)
+      let location = queries.createLocationTable(param.name)
+      insertData(location,db)
+      collectData(tweet,db)
     })
   },
 }
@@ -31,7 +36,7 @@ module.exports = {
  * Stores data in an array, passed to a user object.
  * @param {*} tweet, a tweet object from the twitter streaming API.  
  */
-function collectData(tweet) {
+function collectData(tweet,db) {
   var data = [] // store all data in an arry and prepare to create a user object 
   let text = tweet.text;
   let userName = tweet.user.screen_name;
@@ -41,8 +46,8 @@ function collectData(tweet) {
   let favorites = tweet.favorite_count;
   let time = tweet.created_at;
   data.push(text,userName,name,location,retweets,favorites,time)
-  createUser(data)
-  createTweet(data)
+  createUser(data,db)
+  createTweet(data,db)
 }
 
 /**
@@ -51,12 +56,13 @@ function collectData(tweet) {
  * CALLBACK: insertData
  * @param {array} data 
  */
-function createUser(data){
+function createUser(data,db){
    let newUser = new user()
    newUser.userName = data[1];
    newUser.name = data[2];
    newUser.location = data[3]
-   insertData(newUser)
+   newUser.userID = data[2]
+   createData(newUser,db)
 }
 
 /**
@@ -64,45 +70,69 @@ function createUser(data){
  * CALLBACK: insertData
  * @param {array} data 
  */
-function createTweet(data){
+function createTweet(data,db){
   let newTweet = new tweet();
-  tweet.text = data[0]
-  tweet.date =data[6]
-  tweet.userID = data[2]
-  insertData(newTweet)
+  newTweet.text = data[0]
+  newTweet.date = data[6]
+  newTweet.userID = data[2]
+  createData(newTweet,db)
 }
 
 /**
- * Insert an objet into the sqlite database 
+ * Creates the appropriate query to insert data into database
  * @param {object} a tweet or user object 
  */
-function insertData(object) {
+function createData(object,db) {
   // flag the object as not a user
   let flag = false;
-  console.log(typeof(object))
+
   // if the object contains a username, then it is user. 
   if(object.hasOwnProperty('userName')){
     flag = true;
   }
-
-  // TWEET !! FALSE FLAG
-  if(flag == false){
-    console.log("inserting tweet into database")
-    queries.createTweetTable()
-    queries.insertTweet(object)
-  }
   // USER !! TRUE FLAG
-  else{
-  console.log("Inserting user into database")
-  queries.createUserTable(object)
-  queries.insertUser(object)
+  if(flag == true){
+    try{     
+      let table = queries.createUserTable(object)
+      let user = queries.insertUser(object)
+      insertData(table,db)
+      insertData(user,db)
+      }catch(err){
+        console.log("Error creating data: "+ err)
+      }
   }
+  // TWEET !! FALSE FLAG
+  else{
+    try{
+      let table = queries.createTweetTable()
+      let tweet = queries.insertTweet(object)
+      insertData(table,db)
+      insertData(tweet,db)
+      }catch(err){
+        console.log("Error creating data: "  +err)
+      }
+  }
+  console.log("Data logged")
+  closeCon(db)
+} // end of create data
 
-} // end of insert data
+/**
+ * Inserts data into a database.
+ * @param {*} db 
+ */
+function insertData(query,db) {
+  try{
+  db.serialize(function(){
+    db.run(query)
+  })
+  }catch(err){
+    console.log("Error inserting data: " + err)
+  }
+}
 
 /**
  * Closes a database connection, returns error message to console if error is thrown. 
- * @param {sqlite3} db 
+ * @param{sqlite3} db 
  */
 function closeCon(db) {
   db.close((err) => {
@@ -118,7 +148,7 @@ function closeCon(db) {
  * As default it is set to readable and writable.  
  */
 function connect(){
-  let db = new sqlite3.Database(':twitter', (err) => {
+  let db = new sqlite3.Database('twitter', (err) => {
     if(err) {
         return console.error(err.message)
     }
