@@ -24,16 +24,17 @@ module.exports = {
     { locations: param.id })
     stream.on('tweet', function (tweet) {
       var db = connect()
-      let location = queries.createLocationTable(param.name)
-      insertData(location,db)
-      collectData(tweet,db)
+      let location = queries.createLocationTable(param.name) // create the location as a table
+      insertData(location,db) // insert the table into db
+      collectData(tweet,db) // grab data and store it 
+      closeCon(db)
     })
   },
 }
 
 /**
  * Callback function for the stream search function. 
- * Stores data in an array, passed to a user object.
+ * Stores data in an array, passed to a user  or tweet object.
  * @param {*} tweet, a tweet object from the twitter streaming API.  
  */
 function collectData(tweet,db) {
@@ -75,24 +76,25 @@ function createTweet(data,db){
   newTweet.text = data[0]
   newTweet.date = data[6]
   newTweet.userID = data[2]
+  newTweet.userName = data[1]
   createData(newTweet,db)
 }
 
 /**
  * Creates the appropriate query to insert data into database
- * @param {object} a tweet or user object 
+ * @param{object} a tweet or user object 
  */
 function createData(object,db) {
   // flag the object as not a user
   let flag = false;
-
   // if the object contains a username, then it is user. 
-  if(object.hasOwnProperty('userName')){
+  if(object.hasOwnProperty('location')){
     flag = true;
   }
+ 
   // USER !! TRUE FLAG
   if(flag == true){
-    try{     
+    try{
       let table = queries.createUserTable(object)
       let user = queries.insertUser(object)
       insertData(table,db)
@@ -104,16 +106,16 @@ function createData(object,db) {
   // TWEET !! FALSE FLAG
   else{
     try{
-      let table = queries.createTweetTable()
+      let tweetTable = queries.createTweetTable(object)
       let tweet = queries.insertTweet(object)
-      insertData(table,db)
+      insertData(tweetTable,db)
       insertData(tweet,db)
       }catch(err){
         console.log("Error creating data: "  +err)
       }
   }
   console.log("Data logged")
-  closeCon(db)
+  
 } // end of create data
 
 /**

@@ -8,8 +8,8 @@ module.exports = {
      * @param{Object} a tweet object.
      */
     insertTweet : function(tweet) {
-        sql = 'INSERT INTO tweets (tweetID, tweetText, date) VALUES ('
-        + '"' + tweet.userID + '", "' + tweet.text  + '", "' +  tweet.date +  '" )';
+        sql = 'INSERT INTO tweets (tweetText, date, userName) VALUES ('
+        + '"' + tweet.text  + '", "' +  tweet.date +  '", "' + tweet.userName + '" )';
         return sql; 
     },
 
@@ -18,7 +18,7 @@ module.exports = {
      * @param{Object} a user object 
      */
     insertUser : function(user) { 
-        sql = 'INSERT INTO users (userID, userName, location, userID) VALUES ('
+        sql = 'INSERT or replace INTO users (userID, userName, location, userID) VALUES ('
         +'"'+ user.name + '", "' + user.userName + '", "' + user.location + '", "' + user.userID +  '" )';
         return sql;
     },
@@ -43,8 +43,8 @@ module.exports = {
         + ' tweetID INTEGER PRIMARY KEY AUTOINCREMENT,'
         + ' tweetText text,'
         + ' date text,'
-        + ' userName text,'
-        + 'FOREIGN KEY (userName) REFERENCES users (userName) ';
+        + ' userName text, '
+        + ' FOREIGN KEY (userName) REFERENCES users(userName) )'
         return sql;
     },
 
